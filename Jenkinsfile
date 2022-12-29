@@ -2,13 +2,18 @@ pipeline{
     agent any
 
     stages {
-        stage ('Build'){
+        stage('Clone sources') {
+            git url: 'https://github.com/hareeshsreenivasan/jenkins-docker.git'
+            withMaven {
+                  bat "mvn clean install"
+                }
+        }
+        stage ('Maven Build'){
             steps{
             script {
-                    properties([pipelineTriggers([pollSCM('')])])
+                    properties([pipelineTriggers([pollSCM('* * * * *')])])
                     }
-                bat 'make'
-                archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
+
                 bat 'docker build -t hareesh52/jenkins-docker:version1.0 .'
             }
         }
