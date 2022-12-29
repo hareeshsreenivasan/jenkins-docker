@@ -7,6 +7,8 @@ pipeline{
             script {
                     properties([pipelineTriggers([pollSCM('')])])
                     }
+                bat 'make'
+                archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
                 bat 'docker build -t hareesh52/jenkins-docker:version1.0 .'
             }
         }
