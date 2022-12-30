@@ -1,16 +1,23 @@
 pipeline{
     agent any
-
     stages {
-        stage ('Maven Build'){
+        stage('Setting PollSCM'){
+            script{
+                properties([pipelineTriggers([pollSCM('* * * * *')])])
+            }
+        }
+        stage ('Checkout'){
             steps{
-            script {
-                    properties([pipelineTriggers([pollSCM('* * * * *')])])
-                    }
-            git url: 'https://github.com/hareeshsreenivasan/jenkins-docker.git'
-            withMaven {
-                  bat "mvn clean install"
-                }
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'gitpass', url: 'https://github.com/hareeshsreenivasan/jenkins-docker']]])
+            }
+        }
+        stage('Build'){
+            steps{
+                bat 'mvn clean install -f jenkins-docker/pom.xml'
+            }
+        }
+        stage ('Docker Build'){
+            steps{
                 bat 'docker build -t hareesh52/jenkins-docker:version1.0 .'
             }
         }
