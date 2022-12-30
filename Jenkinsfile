@@ -2,8 +2,10 @@ pipeline{
     agent any
     stages {
         stage('Setting PollSCM'){
-            script{
-                properties([pipelineTriggers([pollSCM('* * * * *')])])
+            steps{
+                script{
+                    properties([pipelineTriggers([pollSCM('* * * * *')])])
+                }
             }
         }
         stage ('Checkout'){
